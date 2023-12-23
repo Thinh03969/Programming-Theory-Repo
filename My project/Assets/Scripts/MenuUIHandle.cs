@@ -19,4 +19,10 @@ public class MenuUIHandle : MonoBehaviour
     {
         MenuController.instance.playerName = nameInput.text;
     }
+
+    public void ExitGame()
+    {
+        Application.Quit();
+        UnityEditor.EditorApplication.isPlaying = false;
+    }
 }
