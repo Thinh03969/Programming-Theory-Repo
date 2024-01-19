@@ -7,17 +7,22 @@ using UnityEngine;
 public class AnimalController : MonoBehaviour
 {
     public bool isTouched = true;
+    public int isCollide = 0;
     public bool moveUp;
     public bool moveDown;
     public bool moveLeft;
     public bool moveRight;
-    int speed = 10;
+    [SerializeField]int speed = 10;
+    [SerializeField]private int z =0;
+    private int x =0;
 
     private MainUIHandle mainUI;
+    public Rigidbody animalRb;
     // Start is called before the first frame update
     void Start()
     {
         mainUI = GameObject.Find("Canvas").GetComponent<MainUIHandle>();
+        animalRb = GameObject.Find("Animal").GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -27,80 +32,66 @@ public class AnimalController : MonoBehaviour
         {
             MoveTrigger();
         }
-        Move();
+    }
+    void FixedUpdate()
+    {
+        animalRb.position += z * transform.forward * Time.deltaTime * speed;
+        animalRb.position += x * transform.right * Time.deltaTime * speed;
     }
 
     void MoveTrigger()
     {
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            mainUI.currentScore++;
-            moveUp = true;
+            z = 1;
             isTouched = false;
         }
 
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            mainUI.currentScore++;
-            moveDown = true;
-            isTouched = false;
-        }
-
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            mainUI.currentScore++;
-            moveLeft = true;
+            z = -1;
             isTouched = false;
         }
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            mainUI.currentScore++;
-            moveRight = true;
+            x = 1;
+            isTouched = false;
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            x = -1;
             isTouched = false;
         }
     }
 
-    void Move()
-    {
-        if (moveUp)
-        {
-            transform.Translate(Vector3.forward * Time.deltaTime * speed);
-        }
-
-        if (moveDown)
-        {
-            transform.Translate(Vector3.forward * Time.deltaTime * -speed);
-        }
-
-        if (moveLeft)
-        {
-            transform.Translate(Vector3.right * Time.deltaTime * -speed);
-        }
-
-        if (moveRight)
-        {
-            transform.Translate(Vector3.right * Time.deltaTime * speed);
-        }
-    }
-
-
     private void OnCollisionEnter(Collision collision)
     {
+        isCollide += 1;
         if (!collision.gameObject.CompareTag("Door"))
         {
-            moveUp = false;
-            moveDown = false;
-            moveLeft = false;
-            moveRight = false;
+            mainUI.currentScore++;
+            mainUI.moveLeft -= 1;
             isTouched = true;
+            x =0;
+            z = 0;
+            if (mainUI.moveLeft == 0)
+            {
+                Destroy(gameObject);
+                mainUI.GameOver();
+            }
         }
 
-        if (collision.gameObject.CompareTag("Door"))
+        if (collision.gameObject.CompareTag("Door") && z==1)
         {
-            mainUI.WinGame();
             Destroy(gameObject);
+            mainUI.WinGame();
         }
     }
 
+    private void OnCollisionExit(Collision collision)
+    {
+        isCollide -= 1;
+    }
 }

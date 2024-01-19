@@ -11,9 +11,12 @@ public class MainUIHandle : MonoBehaviour
     public Text currentScoreText;
     public Text bestPlayer;
     public Text bestScoreText;
+    public TextMeshProUGUI moveLeftText;
     public GameObject winTitle;
+    public TextMeshProUGUI winTitleText;
     public int currentScore=0;
     public int bestScore=0;
+    public int moveLeft = 5;
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +34,7 @@ public class MainUIHandle : MonoBehaviour
     void Update()
     {
         currentScoreText.text = "Moves: " + currentScore;
+        moveLeftText.text = "Moves Left: " + moveLeft;
     }
 
     public void WinGame()
@@ -39,6 +43,7 @@ public class MainUIHandle : MonoBehaviour
         {
             MenuController.instance.SaveBestPlayer(currentScore);
         }
+        moveLeftText.gameObject.SetActive(false);
         winTitle.SetActive(true);
     }
 
@@ -51,5 +56,11 @@ public class MainUIHandle : MonoBehaviour
     public void BackToMenu()
     {
         SceneManager.LoadScene(0);
+    }
+
+    public void GameOver()
+    {
+        winTitleText.text = "Game Over";
+        winTitle.SetActive(true);
     }
 }
