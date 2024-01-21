@@ -359,7 +359,6 @@
 "Assets/Scripts/MainUIHandle.cs"
 "Assets/Scripts/MenuController.cs"
 "Assets/Scripts/MenuUIHandle.cs"
-"Assets/Scripts/Obstacles.cs"
 -langversion:9.0
 
 /deterministic

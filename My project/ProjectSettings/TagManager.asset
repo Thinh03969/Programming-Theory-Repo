@@ -7,7 +7,6 @@ TagManager:
   - Wall
   - Obstacle
   - Door
-  - TopWall
   layers:
   - Default
   - TransparentFX

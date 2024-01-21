@@ -15,8 +15,8 @@ public class MainUIHandle : MonoBehaviour
     public GameObject winTitle;
     public TextMeshProUGUI winTitleText;
     public int currentScore=0;
-    public int bestScore=0;
-    public int moveLeft = 5;
+    private int bestScore=0;
+    public int moveLeft = 6;
 
     // Start is called before the first frame update
     void Start()
@@ -60,7 +60,14 @@ public class MainUIHandle : MonoBehaviour
 
     public void GameOver()
     {
-        winTitleText.text = "Game Over";
+        winTitleText.text = "Game Over \n You are out of Moves";
+        winTitle.SetActive(true);
+    }
+
+    //Overloading
+    public void GameOver(string name)
+    {
+        winTitleText.text = "Game Over \n You were caught trying to get over the "+name;
         winTitle.SetActive(true);
     }
 }

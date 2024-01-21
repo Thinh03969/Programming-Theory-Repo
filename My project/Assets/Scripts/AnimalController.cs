@@ -4,28 +4,31 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
+//Inheritance Monobehaviour class
 public class AnimalController : MonoBehaviour
 {
     public bool isTouched = true;
     public int isCollide = 0;
-    public bool moveUp;
-    public bool moveDown;
-    public bool moveLeft;
-    public bool moveRight;
-    [SerializeField]int speed = 10;
-    [SerializeField]private int z =0;
-    private int x =0;
-
+    public int currentCollide = -1;
+    public int moveUp = 0;
+    public int moveDown = 0;
+    public int moveLeft = 0;
+    public int moveRight = 0;
+    //Encapsulation
+    [SerializeField]private int speed = 10;
+    [SerializeField]private int z = 0;
+    [SerializeField]private int x = 0;
+    public string objectName { get; private set;}
     private MainUIHandle mainUI;
     public Rigidbody animalRb;
-    // Start is called before the first frame update
+  
     void Start()
     {
         mainUI = GameObject.Find("Canvas").GetComponent<MainUIHandle>();
         animalRb = GameObject.Find("Animal").GetComponent<Rigidbody>();
+        InvokeRepeating("CheckErrorMove", 1, 2);
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (isTouched)
@@ -33,35 +36,74 @@ public class AnimalController : MonoBehaviour
             MoveTrigger();
         }
     }
+
     void FixedUpdate()
     {
-        animalRb.position += z * transform.forward * Time.deltaTime * speed;
-        animalRb.position += x * transform.right * Time.deltaTime * speed;
+        Move(z, x);
     }
 
+    void CheckErrorMove()
+    {
+        if (isCollide == currentCollide && (moveUp == 2 || moveDown == 2 || moveRight == 2 || moveLeft == 2))
+        {
+            mainUI.GameOver(objectName);
+            Destroy(gameObject);
+        }
+
+        if (isCollide == currentCollide && currentCollide > 1 && !isTouched)
+        {
+            mainUI.GameOver(objectName);
+            Destroy(gameObject);
+        }
+    }
+
+    //Abstraction Move function
+    void Move(int zMove, int xMove)
+    {
+        animalRb.position += zMove * transform.forward * Time.deltaTime * speed;
+        animalRb.position += xMove * transform.right * Time.deltaTime * speed;
+    }
+
+    //Abstraction MoveTrigger function
     void MoveTrigger()
     {
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             z = 1;
+            moveUp++;
+            moveDown = 0;
+            moveLeft = 0;
+            moveRight = 0;
             isTouched = false;
         }
 
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             z = -1;
+            moveUp = 0;
+            moveDown++;
+            moveLeft = 0;
+            moveRight = 0;
             isTouched = false;
         }
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             x = 1;
+            moveUp = 0;
+            moveDown = 0;
+            moveRight++;
+            moveLeft = 0;
             isTouched = false;
         }
 
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             x = -1;
+            moveUp = 0;
+            moveDown = 0;
+            moveRight = 0;
+            moveLeft++;
             isTouched = false;
         }
     }
@@ -69,6 +111,8 @@ public class AnimalController : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         isCollide += 1;
+        currentCollide = isCollide;
+        objectName = collision.gameObject.tag;
         if (!collision.gameObject.CompareTag("Door"))
         {
             mainUI.currentScore++;
